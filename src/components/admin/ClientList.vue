@@ -24,15 +24,14 @@
       <el-table :data="tableData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="emails" label="邮箱"></el-table-column>
-        <el-table-column prop="phone" label="电话"></el-table-column>
-        <el-table-column prop="status" label="身份"></el-table-column>
-        <el-table-column prop="state" label="状态">
-          <!-- 此处的scope.row显示 -->
+        <el-table-column prop="sex" label="性别"></el-table-column>
+        <el-table-column prop="phone" label="联系电话"></el-table-column>
+        <el-table-column prop="" label="公司"></el-table-column>
+        <!-- <el-table-column prop="state" label="状态">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="操作" width="180">
           <template>
             <!-- 修改 -->
@@ -40,7 +39,7 @@
             <!-- 删除 -->
             <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
             <!-- 分配角色 -->
-            <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
+            <el-tooltip effect="dark" content="购买信息" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
             </el-tooltip>
           </template>
@@ -105,7 +104,7 @@ export default {
     return {
       tableData: [
         {
-          name: '王小五',
+          name: '王11',
           emails: '123456789@qq.com',
           phone: 86935642,
           status: '超级管理员',
