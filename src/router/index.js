@@ -42,10 +42,7 @@ const routes = [{
         path: '/goodInfo',
         component: GoodInfo
       },
-      {
-        path: '/addInfo',
-        component: AddInfo
-      }, {
+ {
         path: '/outInfo',
         component: OutInfo
       }, {

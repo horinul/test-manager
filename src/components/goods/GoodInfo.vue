@@ -23,25 +23,28 @@
       <!-- 表格区 -->
       <el-table :data="tableData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
-        <el-table-column prop="name" label="姓名"></el-table-column>
-        <el-table-column prop="sex" label="性别"></el-table-column>
-        <el-table-column prop="phone" label="联系电话"></el-table-column>
-        <el-table-column prop="" label="公司"></el-table-column>
+        <el-table-column prop="goods_name" label="商品名字"></el-table-column>
+        <el-table-column prop="goods_count" label="数量"></el-table-column>
+        <el-table-column prop="inbound_time" label="入库时间"></el-table-column>
+        <el-table-column prop="goods_num" label="库存编码"></el-table-column>
+        <el-table-column prop="company" label="公司姓名"></el-table-column>
+        <el-table-column prop="check_situation" label="验收情况"></el-table-column>
+
         <!-- <el-table-column prop="state" label="状态">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </template>
-        </el-table-column> -->
-        <el-table-column label="操作" width="180">
+        </el-table-column>-->
+        <el-table-column label="操作" width="130">
           <template>
             <!-- 修改 -->
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog()"></el-button>
             <!-- 删除 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteData()"></el-button>
             <!-- 分配角色 -->
-            <el-tooltip effect="dark" content="购买信息" placement="top" :enterable="false">
+            <!-- <el-tooltip effect="dark" content="购买信息" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
-            </el-tooltip>
+            </el-tooltip>-->
           </template>
         </el-table-column>
       </el-table>
@@ -61,15 +64,24 @@
     </el-card>
     <!-- 添加信息对话框 -->
     <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="30%">
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
-        <el-form-item label="用户名" prop="name">
-          <el-input v-model="addForm.name"></el-input>
+        <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
+        <el-form-item label="商品名字" prop="goods">
+          <el-input v-model="addForm.goods_name"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="emails">
-          <el-input v-model="addForm.emails"></el-input>
+        <el-form-item label="数量" prop="count">
+          <el-input v-model="addForm.goods_count"></el-input>
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="addForm.phone"></el-input>
+        <el-form-item label="入库时间" prop="time">
+          <el-input v-model="addForm.inbound_time"></el-input>
+        </el-form-item>
+        <el-form-item label="库存编码" prop="id">
+          <el-input v-model="addForm.goods_num"></el-input>
+        </el-form-item>
+        <el-form-item label="公司姓名" prop="cname">
+          <el-input v-model="addForm.company"></el-input>
+        </el-form-item>
+        <el-form-item label="验收情况" prop="state">
+          <el-input v-model="addForm.check_situation"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -79,20 +91,29 @@
     </el-dialog>
     <!-- 修改信息对话框 -->
     <el-dialog title="修改信息" :visible.sync="editDialogVisible" width="30%">
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
-        <el-form-item label="用户名" prop="name">
-          <el-input v-model="addForm.name"></el-input>
+      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
+        <el-form-item label="商品名字" prop="goods">
+          <el-input v-model="addForm.goods_name"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="emails">
-          <el-input v-model="addForm.emails"></el-input>
+        <el-form-item label="数量" prop="count">
+          <el-input v-model="addForm.goods_count"></el-input>
         </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="addForm.phone"></el-input>
+        <el-form-item label="入库时间" prop="time">
+          <el-input v-model="addForm.inbound_time"></el-input>
+        </el-form-item>
+        <el-form-item label="库存编码" prop="id">
+          <el-input v-model="addForm.goods_num"></el-input>
+        </el-form-item>
+        <el-form-item label="公司姓名" prop="cname">
+          <el-input v-model="addForm.company"></el-input>
+        </el-form-item>
+        <el-form-item label="验收情况" prop="state">
+          <el-input v-model="addForm.check_situation"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser" :plain="true">确 定</el-button>
+        <el-button type="primary" @click="changeUser" :plain="true">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -104,134 +125,91 @@ export default {
     return {
       tableData: [
         {
-          name: '王11',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '超级管理员',
-          state: true
+          goods_name: "qq",
+          goods_count: "ww",
+          inbound_time: "ee",
+          goods_num: "rr",
+          company: "tt",
+          check_situation: "yy"
         },
         {
-          name: '李小六',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '用户',
-          state: true
-        },
-        {
-          name: '王小五',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '超级管理员',
-          state: true
-        },
-        {
-          name: '李小六',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '用户',
-          state: true
-        },
-        {
-          name: '王小五',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '超级管理员',
-          state: true
-        },
-        {
-          name: '李小六',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '用户',
-          state: true
-        },
-        {
-          name: '王小五',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '超级管理员',
-          state: true
-        },
-        {
-          name: '李小六',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '用户',
-          state: true
-        },
-        {
-          name: '王小五',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '超级管理员',
-          state: true
-        },
-        {
-          name: '李小六',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '用户',
-          state: true
-        },
-        {
-          name: '王小五',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '超级管理员',
-          state: true
-        },
-        {
-          name: '李小六',
-          emails: '123456789@qq.com',
-          phone: 86935642,
-          status: '用户',
-          state: true
+          goods_name: "qq",
+          goods_count: "ww",
+          inbound_time: "ee",
+          goods_num: "rr",
+          company: "tt",
+          check_situation: "yy"
         }
       ],
       queryInfo: {
-        query: '',
+        query: "",
         pagenum: 1,
         pagesize: 10
       },
       userlist: [],
-      total: 24,
-      // 控制添加用户对话框的显示与隐藏
+      total: 0,
       addDialogVisible: false,
       // 添加用户的表单数据
       addForm: {
-        name: '',
-        emails: '',
-        phone: '',
-        status: '用户',
-        state: true
+        goods_name: "",
+        goods_count: "",
+        inbound_time: "",
+        goods_num: "",
+        company: "",
+        check_situation: ""
       },
-      // 添加用户表单的验证规则对象
+      changeForm: {
+        goods_name: "",
+        goods_count: "",
+        inbound_time: "",
+        goods_num: "",
+        company: "",
+        check_situation: ""
+      },
       addFormRules: {
-        name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        emails: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
-        phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }]
+        goods_name: [
+          { required: true, message: "请输入商品名字", trigger: "blur" }
+        ],
+        goods_count: [
+          { required: true, message: "请输入数量", trigger: "blur" }
+        ],
+        inbound_time: [
+          { required: true, message: "请输入入库时间", trigger: "blur" }
+        ],
+        goods_num: [
+          { required: true, message: "请输入库存编码", trigger: "blur" }
+        ],
+        company: [
+          { required: true, message: "请输入公司姓名", trigger: "blur" }
+        ],
+        check_situation: [
+          { required: true, message: "请输入验收情况", trigger: "blur" }
+        ]
       },
       editDialogVisible: false
-    }
+    };
+  },
+  created() {
+    this.total = this.tableData.length;
   },
   methods: {
     async getUserList() {
-      this.userlist = this.tableData
+      this.userlist = this.tableData;
     },
     //  监听pagesize改变的事件
     handleSizeChange(newSize) {
-      console.log(newSize)
-      this.queryInfo.pagesize = newSize
+      console.log(newSize);
+      this.queryInfo.pagesize = newSize;
       // 案例中是根据当前页面需要的数据数量来发起请求
-      this.getUserList()
+      this.getUserList();
     },
     // 监听页码值改变的事件
     handleCurrentChange(newPage) {
-      console.log(newPage)
+      console.log(newPage);
     },
     // 监听添加用户表单的关闭事件并清除其中的数据
     addDialogClosed() {
-      this.$refs.addFormRef.resetFields()
+      this.$refs.addFormRef.resetFields();
     },
     // 点击确认按钮的事件
     // 这个位置有bug，在教程中是直接把数据交到后端，再重新拿数据渲染
@@ -241,21 +219,23 @@ export default {
     addUser() {
       this.$refs.addFormRef.validate(valid => {
         if (!valid) {
-          this.$message('请填写完整信息')
-          this.addDialogClosed()
+          this.$message("请填写完整信息");
+          this.addDialogClosed();
         } else {
-          this.addDialogVisible = false
-          this.tableData.push(Object.assign({}, this.addForm))
-          this.addDialogClosed()
+          this.addDialogVisible = false;
+          this.tableData.push(Object.assign({}, this.addForm));
+          this.addDialogClosed();
         }
-      })
+      });
     },
+    changeUser() {},
     // 展示编辑用户的对话框
     showEditDialog() {
-      this.editDialogVisible = true
-    }
+      this.editDialogVisible = true;
+    },
+    deleteDate() {}
   }
-}
+};
 </script>
 
 <style lang='less' scoped>

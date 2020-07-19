@@ -49,10 +49,6 @@
                 <i class="el-icon-menu"></i>
                 <span>客户信息</span>
               </el-menu-item>
-              <el-menu-item index="addInfo" @click="saveNavState('addInfo')">
-                <i class="el-icon-menu"></i>
-                <span>入库信息</span>
-              </el-menu-item>
               <el-menu-item index="outInfo" @click="saveNavState('outInfo')">
                 <i class="el-icon-menu"></i>
                 <span>出库信息</span>
