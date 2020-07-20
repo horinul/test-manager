@@ -23,12 +23,12 @@
       <!-- 表格区 -->
       <el-table :data="tableData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
-        <el-table-column prop="goods_name" label="商品名字"></el-table-column>
-        <el-table-column prop="goods_count" label="数量"></el-table-column>
-        <el-table-column prop="inbound_time" label="入库时间"></el-table-column>
-        <el-table-column prop="goods_num" label="库存编码"></el-table-column>
+        <el-table-column prop="goodsName" label="商品名字"></el-table-column>
+        <el-table-column prop="goodsCount" label="数量"></el-table-column>
+        <el-table-column prop="inboundTime" label="入库时间"></el-table-column>
+        <el-table-column prop="goodsId" label="库存编码"></el-table-column>
         <el-table-column prop="company" label="公司姓名"></el-table-column>
-        <el-table-column prop="check_situation" label="验收情况"></el-table-column>
+        <el-table-column prop="checkSituation" label="验收情况"></el-table-column>
 
         <!-- <el-table-column prop="state" label="状态">
           <template slot-scope="scope">
@@ -36,11 +36,11 @@
           </template>
         </el-table-column>-->
         <el-table-column label="操作" width="130">
-          <template>
+          <template slot-scope="scope">
             <!-- 修改 -->
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog()"></el-button>
             <!-- 删除 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteData()"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteData(scope)"></el-button>
             <!-- 分配角色 -->
             <!-- <el-tooltip effect="dark" content="购买信息" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
@@ -64,24 +64,24 @@
     </el-card>
     <!-- 添加信息对话框 -->
     <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="30%">
-        <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
-        <el-form-item label="商品名字" prop="goods">
-          <el-input v-model="addForm.goods_name"></el-input>
+        <el-form :model="addForm" :rules="rules" ref="addFormRef" label-width="80px" class="demo-ruleForm">
+        <el-form-item label="商品名字" prop="goodsName">
+          <el-input v-model="addForm.goodsName"></el-input>
         </el-form-item>
-        <el-form-item label="数量" prop="count">
-          <el-input v-model="addForm.goods_count"></el-input>
+        <el-form-item label="数量" prop="goodsCount">
+          <el-input v-model="addForm.goodsCount"></el-input>
         </el-form-item>
-        <el-form-item label="入库时间" prop="time">
-          <el-input v-model="addForm.inbound_time"></el-input>
+        <el-form-item label="入库时间" prop="inboundTime">
+          <el-input v-model="addForm.inboundTime"></el-input>
         </el-form-item>
-        <el-form-item label="库存编码" prop="id">
-          <el-input v-model="addForm.goods_num"></el-input>
+        <el-form-item label="库存编码" prop="goodsId">
+          <el-input v-model="addForm.goodsId"></el-input>
         </el-form-item>
-        <el-form-item label="公司姓名" prop="cname">
+        <el-form-item label="公司姓名" prop="company">
           <el-input v-model="addForm.company"></el-input>
         </el-form-item>
-        <el-form-item label="验收情况" prop="state">
-          <el-input v-model="addForm.check_situation"></el-input>
+        <el-form-item label="验收情况" prop="checkSituation">
+          <el-input v-model="addForm.checkSituation"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -91,24 +91,24 @@
     </el-dialog>
     <!-- 修改信息对话框 -->
     <el-dialog title="修改信息" :visible.sync="editDialogVisible" width="30%">
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
-        <el-form-item label="商品名字" prop="goods">
-          <el-input v-model="addForm.goods_name"></el-input>
+      <el-form :model="addForm" :rules="rules" ref="addFormRef" label-width="80px" class="demo-ruleForm">
+        <el-form-item label="商品名字" prop="goodsName">
+          <el-input v-model="addForm.goodsName"></el-input>
         </el-form-item>
-        <el-form-item label="数量" prop="count">
-          <el-input v-model="addForm.goods_count"></el-input>
+        <el-form-item label="数量" prop="goodsCount">
+          <el-input v-model="addForm.goodsCount"></el-input>
         </el-form-item>
-        <el-form-item label="入库时间" prop="time">
-          <el-input v-model="addForm.inbound_time"></el-input>
+        <el-form-item label="入库时间" prop="inboundTime">
+          <el-input v-model="addForm.inboundTime"></el-input>
         </el-form-item>
-        <el-form-item label="库存编码" prop="id">
-          <el-input v-model="addForm.goods_num"></el-input>
+        <el-form-item label="库存编码" prop="goodsId">
+          <el-input v-model="addForm.goodsId"></el-input>
         </el-form-item>
-        <el-form-item label="公司姓名" prop="cname">
+        <el-form-item label="公司姓名" prop="company">
           <el-input v-model="addForm.company"></el-input>
         </el-form-item>
-        <el-form-item label="验收情况" prop="state">
-          <el-input v-model="addForm.check_situation"></el-input>
+        <el-form-item label="验收情况" prop="checkSituation">
+          <el-input v-model="addForm.checkSituation"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -125,20 +125,20 @@ export default {
     return {
       tableData: [
         {
-          goods_name: "qq",
-          goods_count: "ww",
-          inbound_time: "ee",
-          goods_num: "rr",
+          goodsName: "qq",
+          goodsCount: "ww",
+          inboundTime: "ee",
+          goodsId: "rr",
           company: "tt",
-          check_situation: "yy"
+          checkSituation: "yy"
         },
         {
-          goods_name: "qq",
-          goods_count: "ww",
-          inbound_time: "ee",
-          goods_num: "rr",
+          goodsName: "qq",
+          goodsCount: "ww",
+          inboundTime: "ee",
+          goodsId: "rr",
           company: "tt",
-          check_situation: "yy"
+          checkSituation: "yy"
         }
       ],
       queryInfo: {
@@ -151,45 +151,57 @@ export default {
       addDialogVisible: false,
       // 添加用户的表单数据
       addForm: {
-        goods_name: "",
-        goods_count: "",
-        inbound_time: "",
-        goods_num: "",
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
         company: "",
-        check_situation: ""
+        checkSituation: ""
       },
       changeForm: {
-        goods_name: "",
-        goods_count: "",
-        inbound_time: "",
-        goods_num: "",
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
         company: "",
-        check_situation: ""
+        checkSituation: ""
       },
-      addFormRules: {
-        goods_name: [
+     
+     
+     rules: {
+        goodsName: [
           { required: true, message: "请输入商品名字", trigger: "blur" }
         ],
-        goods_count: [
+        goodsCount: [
           { required: true, message: "请输入数量", trigger: "blur" }
         ],
-        inbound_time: [
+        inboundTime: [
           { required: true, message: "请输入入库时间", trigger: "blur" }
         ],
-        goods_num: [
+        goodsId: [
           { required: true, message: "请输入库存编码", trigger: "blur" }
         ],
         company: [
           { required: true, message: "请输入公司姓名", trigger: "blur" }
         ],
-        check_situation: [
+        checkSituation: [
           { required: true, message: "请输入验收情况", trigger: "blur" }
         ]
       },
       editDialogVisible: false
-    };
+    }
+
+  
   },
+
+
+
+
+
   created() {
+    // 获取后端数据后
+    ///this.tableData=数据
+    fetch();
     this.total = this.tableData.length;
   },
   methods: {
@@ -198,7 +210,7 @@ export default {
     },
     //  监听pagesize改变的事件
     handleSizeChange(newSize) {
-      console.log(newSize);
+      //console.log(newSize);
       this.queryInfo.pagesize = newSize;
       // 案例中是根据当前页面需要的数据数量来发起请求
       this.getUserList();
@@ -218,6 +230,61 @@ export default {
     // 解决方案：Object.assign({}, this.addForm)需要深拷贝
     addUser() {
       this.$refs.addFormRef.validate(valid => {
+        console.log(valid)
+        if (!valid) {
+          this.$message("请填写完整信息");
+          this.addDialogClosed();
+        } 
+      else {
+          this.addDialogVisible = false;
+          this.tableData.push(Object.assign({}, this.addForm));
+          this.addDialogClosed();
+
+
+          //向前端发送数据 @rk---
+          //console.log(this.addForm)
+          this.$http.post("/commodity/update", this.addForm).then(res => {
+          this.$message({
+            message: "提交成功",
+            type: "success"
+          });
+          this.addForm = {
+           goodsName: "",
+           goodsCount: "",
+           inboundTime: "",
+           goodsId: "",
+           company: "",
+        checkSituation: ""
+          };
+          this.fetch();
+        }).catch(error=>{
+                        console.log(error);
+                    });
+        }
+      });
+    },
+    
+
+
+    //向后端申请数据 @rk---
+    // {
+    //       goodsName: "",
+    //       goodsCount: "",
+    //       inboundTime: "",
+    //       goodsId: "",
+    //       company: "",
+    //       checkSituation: ""
+    //     },
+    fetch() {
+      this.$http.get("/commodity/getAll").then(res => {
+        this.tableData= res.data;
+        
+      });
+    },
+
+    //修改信息  @rk---
+    changeUser() {
+       this.$refs.addFormRef.validate(valid => {
         if (!valid) {
           this.$message("请填写完整信息");
           this.addDialogClosed();
@@ -225,15 +292,42 @@ export default {
           this.addDialogVisible = false;
           this.tableData.push(Object.assign({}, this.addForm));
           this.addDialogClosed();
+
+
+          //向前端发送数据 @rk---
+          //console.log(this.addForm)
+          this.$http.post("/commodity/update", this.addForm).then(res => {
+          this.$message({
+            message: "提交成功",
+            type: "success"
+          });
+          this.addForm = {
+           goodsName: "",
+           goodsCount: "",
+           inboundTime: "",
+           goodsId: "",
+           company: "",
+        checkSituation: ""
+          };
+          this.fetch();
+        }).catch(error=>{
+                        console.log(error);
+                    });
         }
       });
+
     },
-    changeUser() {},
     // 展示编辑用户的对话框
     showEditDialog() {
       this.editDialogVisible = true;
     },
-    deleteDate() {}
+
+    //出库操作 @rk---
+    deleteData(scope) {      
+      //console.log("index的值是：",scope.$index)
+      this.tableData.splice(scope.$index, 1)
+      //console.log("出库的货物编码:",scope.row.goodsId)
+    }
   }
 };
 </script>
