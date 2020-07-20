@@ -23,16 +23,16 @@
       <!-- 表格区 -->
       <el-table :data="tableData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
-        <el-table-column prop="user_name" label="姓名"></el-table-column>
-        <el-table-column prop="user_sex" label="性别"></el-table-column>
-        <el-table-column prop="user_tel" label="联系电话"></el-table-column>
+        <el-table-column prop="userName" label="姓名"></el-table-column>
+        <el-table-column prop="userSex" label="性别"></el-table-column>
+        <el-table-column prop="userTel" label="联系电话"></el-table-column>
         <el-table-column prop="company" label="公司"></el-table-column>
         <el-table-column label="操作" width="130">
-          <template>
+          <template slot-scope="scope">
             <!-- 修改 -->
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog()"></el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope)"></el-button>
             <!-- 删除 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteData(scope)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -54,13 +54,13 @@
     <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="30%">
       <el-form :model="changeForm" :rules="FormRules" ref="changeFormRef" label-width="90px">
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="addForm.user_name"></el-input>
+          <el-input v-model="addForm.userName"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="sex">
-          <el-input v-model="addForm.user_sex"></el-input>
+          <el-input v-model="addForm.userSex"></el-input>
         </el-form-item>
         <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="addForm.user_tel"></el-input>
+          <el-input v-model="addForm.userTel"></el-input>
         </el-form-item>
         <el-form-item label="公司" prop="cname">
           <el-input v-model="addForm.company"></el-input>
@@ -75,13 +75,13 @@
     <el-dialog title="修改信息" :visible.sync="editDialogVisible" width="30%">
       <el-form :model="changeForm" :rules="FormRules" ref="changeFormRef" label-width="90px">
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="addForm.user_name"></el-input>
+          <el-input v-model="addForm.userName"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="sex">
-          <el-input v-model="addForm.user_sex"></el-input>
+          <el-input v-model="addForm.userSex"></el-input>
         </el-form-item>
         <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="addForm.user_tel"></el-input>
+          <el-input v-model="addForm.userTel"></el-input>
         </el-form-item>
         <el-form-item label="公司" prop="cname">
           <el-input v-model="addForm.company"></el-input>
@@ -101,15 +101,15 @@ export default {
     return {
       tableData: [
         {
-          user_name: "11",
-          user_sex: "male",
-          user_tel: "11233",
+          userName: "11",
+          userSex: "male",
+          userTel: "11233",
           company: "bat"
         },
         {
-          user_name: "11",
-          user_sex: "male",
-          user_tel: "11233",
+          userName: "11",
+          userSex: "male",
+          userTel: "11233",
           company: "bat"
         }
       ],
@@ -179,6 +179,24 @@ export default {
     // 展示编辑用户的对话框
     showEditDialog() {
       this.editDialogVisible = true;
+      this.editForm=scope.row;
+    },
+       deleteData(scope) {      
+      //console.log("index的值是：",scope.$index)
+      
+      this.tableData.splice(scope.$index, 1)
+      //this.inintData()//更新searchData
+      //console.log("出库的货物编码:",scope.row.goodsId)
+                            //用户信息删除      通过姓名判断
+       this.$http.post("/information/editUser", scope.row.userName).then(res => {
+          this.$message({
+            message: "操作成功",
+            type: "success"
+          });
+          this.fetch();
+        }).catch(error=>{
+                        console.log(error);
+                    });
     }
   }
 };
