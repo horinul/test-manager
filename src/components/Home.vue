@@ -2,8 +2,8 @@
   <el-container class="home-container">
     <el-header>
       <div>
-        <img src="../assets/snow.png" alt class="logo" />
-        <span class="title">仓库管理系统</span>
+        <img src="../assets/snow.png" style="position: relative; top:4.3px; width: 60px;height:60px;" alt class="logo" />
+       <img src="../assets/logo-light-text.png" style="position: absolute; width: 260px;height:42px;top:10px;left: 50px;" alt class="臭鼬仓库"/>
       </div>
       <div>
         <el-button @click="logout">退出登录</el-button>
@@ -26,7 +26,7 @@
         >
           <el-submenu index="1">
             <template slot="title">
-              <i class="el-icon-user-solid"></i>
+              <i class="el-icon-box"></i>
               <span>货物相关</span>
             </template>
             <el-menu-item-group>
@@ -94,9 +94,9 @@
 export default {
   data() {
     return {
-      fold1: "< | |",
-      fold2: "| | >",
-      fold: "< | |",
+      fold1: " 🌦",
+      fold2: "🌈",
+      fold: "⛈",
       // 是否折叠
       collapse: false,
       // 当前被激活的链接地址
@@ -113,7 +113,7 @@ export default {
     toggleCollapse() {
       // 点击按钮实现菜单的折叠和展开
       this.collapse = !this.collapse;
-      // this.fold = this.fold === this.fold1 ? this.fold2 : this.fold1
+      this.fold = this.fold === this.fold1 ? this.fold2 : this.fold1
     },
     saveNavState(activePath) {
       this.$router.push("./" + activePath);

@@ -12,17 +12,18 @@
         :rules="rules"
       >
         <!-- 用户名 -->
-        <el-form-item prop="username">
-          <el-input prefix-icon="el-icon-user" v-model="loginForm.username"></el-input>
+        <el-form-item prop="userAcount">
+          <el-input prefix-icon="el-icon-user" v-model="loginForm.userAcount"></el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item prop="password">
-          <el-input prefix-icon="el-icon-unlock" v-model="loginForm.password" type="password"></el-input>
+        <el-form-item prop="userPassword">
+          <el-input prefix-icon="el-icon-unlock" v-model="loginForm.userPassword" type="userPassword"></el-input>
         </el-form-item>
         <!-- 按钮区 -->
-        <el-form-item class="btns">
-          <el-button type="primary" plain @click="login">登录</el-button>
-          <el-button type="info" plain @click="resetLoginForm">重置</el-button>
+       
+          <el-button type="primary" class="sumbtn" plain @click="login">登录</el-button>
+           <el-form-item class="btns">
+          <el-button type="text" plain @click="resetLoginForm">注册账号</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -33,27 +34,75 @@
 export default {
   data() {
     return {
+      fullscreenLoading: false,
       loginForm: {
-        username: "",
-        password: ""
+        userAcount: "",
+        userPassword: ""
+      },
+      postForm: {
+        userAcount: "",
+        userPassword: ""
       },
       rules: {
-        username: [
+        userAcount: [
           { required: true, message: "请输入用户名", trigger: "blur" }
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        userPassword: [{ required: true, message: "请输入密码", trigger: "blur" }]
       }
     };
   },
   methods: {
+   
+        
     resetLoginForm() {
-      this.$refs.loginFormRef.resetFields();
-      this.$message("重置成功！");
+      this.$router.push("/regist")
     },
     login() {
+
+  
       this.$refs.loginFormRef.validate(valid => {
-        this.$message.success("登录成功！");
-        this.$router.push("/home");
+        if (!valid) {
+          this.$message("请填写完整信息");
+          this.addDialogClosed();
+        } else { 
+          this.openLoading();
+             var psw = this.$md5(this.loginForm.userPassword);
+             var psw_pro = this.$md5(psw)
+             this.postForm.userPassword = psw_pro
+             this.postForm.userAcount = this.loginForm.userAcount
+
+           console.log(this.postForm)
+           this.$http
+            .post("url", this.postForm)
+            .then(res => {
+                 this.openLoading().close();
+             if(res==0) {
+               this.$message({
+                message: "登陆成功",
+                type: "success"
+              });
+              this.loginForm = {
+                userAcount: "",
+                userPassword: ""
+              };
+              this.$message.success("登录成功！");
+              this.$router.push("/home");}
+              else{
+                 this.$message({
+                message: "账号或者密码错误",
+                type: "danger"
+              });
+              this.$refs.loginFormRef.resetFields()
+              }
+            })
+            .catch(error => {
+             // console.log(error);
+            });
+               
+          
+         }
+
+      
       });
     }
   }
@@ -103,5 +152,11 @@ export default {
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
+}
+.sumbtn{
+    position: absolute;
+    width: 230px;
+    margin: 0 88px auto
+
 }
 </style>

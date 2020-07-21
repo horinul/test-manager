@@ -12,39 +12,45 @@
       <!-- 搜索框区 -->
       <el-row :gutter="20">
         <el-col :span="10">
-          <el-input placeholder="请输入内容" v-model="queryInfo.query" class="input-with-select">
+          <!-- <el-input placeholder="请输入内容" v-model="search"
+                       @input="submitFun"
+                       ref='searchInput' class="input-with-select">
+            <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>-->
+
+          <el-input placeholder="请输入商品名或者公司" v-model="search" @input="submitFun" ref="searchInput">
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
         </el-col>
-        <el-col :span="4">
-          <el-button type="primary" plain>添加信息</el-button>
-        </el-col>
       </el-row>
       <!-- 表格区 -->
-      <el-table :data="tableData" border :stripe="true">
+      <el-table :data="searchData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
-        <el-table-column prop="goods_name" label="商品名字"></el-table-column>
-        <el-table-column prop="goods_count" label="数量"></el-table-column>
-        <el-table-column prop="inbound_time" label="验收情况"></el-table-column>
-        <el-table-column prop="outbound_time" label="出库时间"></el-table-column>
-        <el-table-column prop="goods_num" label="库存编码"></el-table-column>
-        <el-table-column prop="company" label="公司姓名"></el-table-column>
+        <el-table-column prop="goodsName" label="商品名字"></el-table-column>
+        <el-table-column prop="goodsCount" label="数量"></el-table-column>
+        <el-table-column prop="outboundTime" label="出库时间"></el-table-column>
+        <el-table-column prop="goodsId" label="库存编码"></el-table-column>
+        <el-table-column prop="company" label="公司"></el-table-column>
+        <el-table-column prop="userName" label="客户姓名"></el-table-column>
+        <el-table-column prop="userTel" label="电话"></el-table-column>
+        <el-table-column prop="depotNum" label="出库仓库"></el-table-column>
+        <el-table-column prop="userPs" label="备注"></el-table-column>
         <!-- <el-table-column prop="state" label="状态">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </template>
         </el-table-column>-->
         <el-table-column label="操作" width="130">
-          <template>
+          <template slot-scope="scope">
             <!-- 删除 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteData()"></el-button>
+
             <!-- 分配角色 -->
             <el-tooltip effect="dark" content="审批" placement="top" :enterable="false">
               <el-button
                 type="warning"
                 icon="el-icon-setting"
-                size="mini"
-                @click="addDialogVisible=true"
+                size="mid"
+                @click="checkDecision(scope)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -64,10 +70,13 @@
         ></el-pagination>
       </div>
     </el-card>
+
     <!-- 添加信息对话框 -->
     <el-dialog title="审批" :visible.sync="addDialogVisible" width="20%">
-      <el-radio v-model="radio" label="1">允许</el-radio>
-      <el-radio v-model="radio" label="2">拒绝</el-radio>
+      <el-form :model="checkedData" ref="addFormRef" label-width="80px" class="demo-ruleForm">
+        <el-radio v-model="checkedData.checkSituation" label="1">允许</el-radio>
+        <el-radio v-model="checkedData.checkSituation" label="2">拒绝</el-radio>
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addUser" :plain="true">确 定</el-button>
@@ -80,90 +89,140 @@
 export default {
   data() {
     return {
+      search: "",
+      searchData: "",
       tableData: [
         {
-          goods_name: "矿泉水",
-          goods_count: 110,
-          inbound_time: "2020/2/21",
-          outbound_time: "2020/3/10",
-          goods_num: "bat",
-          company: "待审核"
+          goodsName: "矿泉水",
+          goodsCount: 110,
+          outboundTime: "2020/2/21",
+          goodsId: "33",
+          company: "bat",
+          userName: "zhangshan",
+          userTel: "5591",
+          depotNum: "bat",
+          userPs: "待审核"
         },
         {
-          goods_name: "矿泉水",
-          goods_count: 110,
-          inbound_time: "2020/2/21",
-          outbound_time: "2020/3/10",
-          goods_num: "bat",
-          company: "待审核"
+          goodsName: "泡面",
+          goodsCount: 120,
+          outboundTime: "2020/2/21",
+          goodsId: "32",
+          company: "bat",
+          userName: "zhangshan",
+          userTel: "55291",
+          depotNum: "bat",
+          userPs: "待审核"
         }
       ],
+      checkedData: {
+        goodsId: "",
+        checkSituation: ""
+      },
       queryInfo: {
         query: "",
         pagenum: 1,
-        pagesize: 10
+        pagesize: 15
       },
       userlist: [],
       total: 0,
       radio: 0,
+      formIndex: "",
       addDialogVisible: false,
-      // 添加用户的表单数据
       addForm: {
-        goods_name: "",
-        goods_count: 0,
-        inbound_time: "",
-        outbound_time: "",
-        goods_num: "",
-        company: ""
-      },
-      changeForm: {
-        goods_name: "",
-        goods_count: 0,
-        inbound_time: "",
-        outbound_time: "",
-        goods_num: "",
-        company: ""
-      },
-      addFormRules: {
-        goods: [{ required: true, message: "请输入商品名字", trigger: "blur" }],
-        count: [{ required: true, message: "请输入数量", trigger: "blur" }],
-        time: [
-          { required: true, message: "请输入申请出库时间", trigger: "blur" }
-        ],
-        id: [{ required: true, message: "请输入库存编码", trigger: "blur" }],
-        cname: [{ required: true, message: "请输入公司姓名", trigger: "blur" }],
-        state: [{ required: true, message: "请输入验收情况", trigger: "blur" }]
-      },
-      editDialogVisible: false
+        goodsId: "",
+        checkSituation: ""
+      }
     };
   },
-  created() {
+
+  created: function() {
+    // 获取后端数据后
+    ///this.tableData=数据
+    this.fetch();
+    this.inintData();
     this.total = this.tableData.length;
   },
   methods: {
     async getUserList() {
       this.userlist = this.tableData;
     },
+    //查询功能
+    inintData() {
+      this.searchData = this.tableData;
+    },
+    submitFun() {
+      let search = this.search;
+      this.searchData = this.tableData.filter(function(tabledatas) {
+        let searchField = {
+          goodsName: tabledatas.goodsName,
+          company: tabledatas.company
+        };
+        return Object.keys(searchField).some(function(key) {
+          return (
+            String(tabledatas[key])
+              .toLowerCase()
+              .indexOf(search) > -1
+          );
+        });
+      });
+    },
     //  监听pagesize改变的事件
     handleSizeChange(newSize) {
-      console.log(newSize);
+      //console.log(newSize);
       this.queryInfo.pagesize = newSize;
       // 案例中是根据当前页面需要的数据数量来发起请求
-      this.getUserList();
+      //this.getUserList();
+      this.handleCurrentChange(this.queryInfo.pagenum);
     },
     // 监听页码值改变的事件
-    handleCurrentChange(newPage) {
-      console.log(newPage);
+    handleCurrentChange(currentPage) {
+      //console.log(newPage);
+      this.queryInfo.pagenum = currentPage;
+      this.currentChangePage(this.tableData, currentPage);
     },
+    currentChangePage(list, currentPage) {
+      let from = (currentPage - 1) * this.queryInfo.pagesize;
+      let to = currentPage * this.queryInfo.pagesize;
+      this.searchData = [];
+      for (; from < to; from++) {
+        if (list[from]) {
+          this.searchData.push(list[from]);
+        }
+      }
+    },
+
     // 监听添加用户表单的关闭事件并清除其中的数据
     addDialogClosed() {
       this.$refs.addFormRef.resetFields();
     },
+
     // 点击确认按钮的事件
     // 这个位置有bug，在教程中是直接把数据交到后端，再重新拿数据渲染
     // 但此处加入tableData的数据和addForm绑定死了，分不开，在加入数据了之后
     // 清除表单里的数据还是会把已经加入界面里的删掉，就算不清除表单里的数据，加入表格里的也会每个数据都一模一样
     // 解决方案：Object.assign({}, this.addForm)需要深拷贝
+
+    //向后端申请数据 @rk---
+    // {
+    //       userName: "",
+    //       userSex: "",
+    //       userTel: "",
+    //       company: "",
+    //     },
+    fetch() {
+      this.$http
+        .get("http://7qrmdg.natappfree.cc/kyaru/apply/getUnchecked")
+        .then(res => {
+          this.tableData = res.data;
+          this.inintData();
+        });
+    },
+    checkDecision(scope) {
+      this.addDialogVisible = true;
+      this.checkedData.goodsId = scope.row.goodsId;
+      this.formIndex = scope.$index;
+    },
     addUser() {
       this.$refs.addFormRef.validate(valid => {
         if (!valid) {
@@ -171,17 +230,56 @@ export default {
           this.addDialogClosed();
         } else {
           this.addDialogVisible = false;
-          this.tableData.push(Object.assign({}, this.addForm));
           this.addDialogClosed();
+          this.tableData.splice(this.formIndex, 1);
+          this.inintData();
+          this.formIndex = "";
+          this.$http
+            .post("", this.checkedData)
+            .then(res => {
+              this.$message({
+                message: "提交成功",
+                type: "success"
+              });
+              this.editForm = {
+                goodsId: "",
+                checkSituation: ""
+              };
+              this.fetch();
+            })
+            .catch(error => {
+              console.log(error);
+            });
         }
       });
     },
-    changeUser() {},
+    // @rk---
     // 展示编辑用户的对话框
     showEditDialog() {
       this.editDialogVisible = true;
     },
-    deleteDate() {}
+
+    //出库操作 @rk---
+    deleteData(scope) {
+      //console.log("index的值是：",scope.$index)
+
+      this.tableData.splice(scope.$index, 1);
+      this.inintData();
+      //console.log("出库的货物编码:",scope.row.goodsId)
+      //返回用户姓名，后端根据userName进行相关处理    将该商品从商品展示的数据库中删除并保存到出库记录数据库中
+      this.$http
+        .post("/removeCommodity/outbound", scope.row.goodsId)
+        .then(res => {
+          this.$message({
+            message: "操作成功",
+            type: "success"
+          });
+          this.fetch();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   }
 };
 </script>

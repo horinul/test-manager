@@ -3,8 +3,8 @@
     <!-- 头部面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>管理员相关</el-breadcrumb-item>
-      <el-breadcrumb-item>客户列表</el-breadcrumb-item>
+      <el-breadcrumb-item>管理相关</el-breadcrumb-item>
+      <el-breadcrumb-item>客户信息</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 卡片视图区 -->
@@ -12,27 +12,42 @@
       <!-- 搜索框区 -->
       <el-row :gutter="20">
         <el-col :span="10">
-          <el-input placeholder="请输入内容" v-model="queryInfo.query" class="input-with-select">
+          <!-- <el-input placeholder="请输入内容" v-model="search"
+                       @input="submitFun"
+                       ref='searchInput' class="input-with-select">
             <el-button slot="append" icon="el-icon-search"></el-button>
-          </el-input>
+          </el-input> -->
+
+              <el-input placeholder="请输入用户姓名或者用户电话号码"
+                       v-model="search"
+                       @input="submitFun"
+                       ref='searchInput'>
+                        <el-button slot="append" icon="el-icon-search"></el-button></el-input>
         </el-col>
-        <el-col :span="4">
-          <el-button type="primary" plain @click="addDialogVisible=true">添加信息</el-button>
-        </el-col>
+       
       </el-row>
       <!-- 表格区 -->
-      <el-table :data="tableData" border :stripe="true">
+      <el-table :data="searchData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
         <el-table-column prop="userName" label="姓名"></el-table-column>
         <el-table-column prop="userSex" label="性别"></el-table-column>
         <el-table-column prop="userTel" label="联系电话"></el-table-column>
         <el-table-column prop="company" label="公司"></el-table-column>
+
+        <!-- <el-table-column prop="state" label="状态">
+          <template slot-scope="scope">
+            <el-switch v-model="scope.row.state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+          </template>
+        </el-table-column>-->
         <el-table-column label="操作" width="130">
           <template slot-scope="scope">
-            <!-- 修改 -->
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope)"></el-button>
+            
             <!-- 删除 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteData(scope)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBridge(scope)"></el-button>
+            <!-- 分配角色 -->
+            <!-- <el-tooltip effect="dark" content="购买信息" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+            </el-tooltip>-->
           </template>
         </el-table-column>
       </el-table>
@@ -50,48 +65,16 @@
         ></el-pagination>
       </div>
     </el-card>
-    <!-- 添加信息对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="30%">
-      <el-form :model="changeForm" :rules="FormRules" ref="changeFormRef" label-width="90px">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="addForm.userName"></el-input>
-        </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-input v-model="addForm.userSex"></el-input>
-        </el-form-item>
-        <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="addForm.userTel"></el-input>
-        </el-form-item>
-        <el-form-item label="公司" prop="cname">
-          <el-input v-model="addForm.company"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addData" :plain="true">确 定</el-button>
-      </span>
-    </el-dialog>
+   
     <!-- 修改信息对话框 -->
-    <el-dialog title="修改信息" :visible.sync="editDialogVisible" width="30%">
-      <el-form :model="changeForm" :rules="FormRules" ref="changeFormRef" label-width="90px">
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="addForm.userName"></el-input>
-        </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-input v-model="addForm.userSex"></el-input>
-        </el-form-item>
-        <el-form-item label="联系电话" prop="phone">
-          <el-input v-model="addForm.userTel"></el-input>
-        </el-form-item>
-        <el-form-item label="公司" prop="cname">
-          <el-input v-model="addForm.company"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="changeData" :plain="true">确 定</el-button>
-      </span>
-    </el-dialog>
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+          <span style="font-size: 20px; font-weight: 800;">确定要删除该条数据吗    <img src="../../assets/logo.png" style="position:absolute ; top:34.3px; width: 120px;height:120px;" alt class="logo" /></span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="deleteData(scope)">确 定</el-button>
+          </span>
+        </el-dialog>
+   
   </div>
 </template>
 
@@ -99,16 +82,20 @@
 export default {
   data() {
     return {
+      scope:"",
+      dialogVisible: false,
+       search:'',
+      searchData:'',
       tableData: [
-        {
-          userName: "11",
-          userSex: "male",
+         {
+          userName: "22",
+          userSex: "female",
           userTel: "11233",
           company: "bat"
         },
         {
-          userName: "11",
-          userSex: "male",
+          userName: "33",
+          userSex: "female",
           userTel: "11233",
           company: "bat"
         }
@@ -116,79 +103,149 @@ export default {
       queryInfo: {
         query: "",
         pagenum: 1,
-        pagesize: 10
+        pagesize: 15
       },
       userlist: [],
-      total: 24,
-      // 控制添加用户对话框的显示与隐藏
+      total: 0,
       addDialogVisible: false,
+     editDialogVisible: false,
       // 添加用户的表单数据
       addForm: {
-        name: "",
-        sex: "",
-        phone: "",
-        cname: ""
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
+        company: "",
+        checkSituation: ""
+      },
+        editForm: {
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
+        company: "",
+        checkSituation: ""
       },
       changeForm: {
-        name: "",
-        sex: "",
-        phone: "",
-        cname: ""
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
+        company: "",
+        checkSituation: ""
       },
-      // 添加用户表单的验证规则对象
-      FormRules: {
-        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-        sex: [{ required: true, message: "请输入性别", trigger: "blur" }],
-        phone: [{ required: true, message: "请输入联系电话", trigger: "blur" }],
-        cname: [{ required: true, message: "请输入公司名", trigger: "blur" }]
-      },
-      editDialogVisible: false
-    };
+     
+      
+    }
+
+  
   },
-  created() {
-    this.total = this.tableData.length;
+
+
+
+
+
+  created: function(){
+    // 获取后端数据后
+    ///this.tableData=数据
+      this.fetch();
+       this.inintData();
+      this.total = this.tableData.length;
+        
   },
   methods: {
     async getUserList() {
       this.userlist = this.tableData;
     },
-    handleSizeChange(newSize) {
-      console.log(newSize);
-      this.queryInfo.pagesize = newSize;
-      this.getUserList();
+    //查询功能
+    inintData(){
+      this.searchData=this.tableData
     },
-    handleCurrentChange(newPage) {
-      console.log(newPage);
+    submitFun(){
+       let search = this.search;
+            this.searchData = this.tableData.filter(function (tabledatas) {
+               // console.log('过滤', tabledatas);
+                let searchField = { userName: tabledatas.userName, userTel:tabledatas.userTel };
+                return Object.keys(searchField).some(function (key) {
+                //    console.log('key值', key);
+                    return String(tabledatas[key]).toLowerCase().indexOf(search) > -1;
+                });
+            })
+        
+
+      
+    },
+    //  监听pagesize改变的事件
+    handleSizeChange(newSize) {
+      //console.log(newSize);
+      this.queryInfo.pagesize = newSize;
+      // 案例中是根据当前页面需要的数据数量来发起请求
+      //this.getUserList();
+      this.handleCurrentChange(this.queryInfo.pagenum)
+    },
+    // 监听页码值改变的事件
+    handleCurrentChange(currentPage) {
+      //console.log(newPage);
+      this.queryInfo.pagenum = currentPage;
+      this.currentChangePage(this.tableData,currentPage)
+    },
+     currentChangePage(list,currentPage) { 
+   let from = (currentPage - 1) * this.queryInfo.pagesize;
+   let to = currentPage * this.queryInfo.pagesize;
+   this.searchData = [];
+   for (; from < to; from++) {
+    if (list[from]) {
+     this.searchData.push(list[from]);
+    }
+   }
+  },
+
+    // 监听添加用户表单的关闭事件并清除其中的数据
+    addDialogClosed() {
+      this.$refs.addFormRef.resetFields();
     },
     addDialogClosed() {
       this.$refs.addFormRef.resetFields();
     },
-    addData() {
-      this.$refs.addFormRef.validate(valid => {
-        if (!valid) {
-          this.$message("请填写完整信息");
-          this.addDialogClosed();
-        } else {
-          this.addDialogVisible = false;
-          this.tableData.push(Object.assign({}, this.addForm));
-          this.addDialogClosed();
-        }
+    // 点击确认按钮的事件
+    // 这个位置有bug，在教程中是直接把数据交到后端，再重新拿数据渲染
+    // 但此处加入tableData的数据和addForm绑定死了，分不开，在加入数据了之后
+    // 清除表单里的数据还是会把已经加入界面里的删掉，就算不清除表单里的数据，加入表格里的也会每个数据都一模一样
+    // 解决方案：Object.assign({}, this.addForm)需要深拷贝
+  
+
+
+    //向后端申请数据 @rk---
+    // {
+    //       userName: "",
+    //       userSex: "",
+    //       userTel: "",
+    //       company: "",
+    //     },
+    fetch() {
+      this.$http.get("/commodity/getAll").then(res => {
+        this.tableData= res.data;  
+        this.inintData();
+        
       });
     },
-    changeData() {},
-    // 展示编辑用户的对话框
-    showEditDialog() {
-      this.editDialogVisible = true;
-      this.editForm=scope.row;
+
+    //修改信息  @rk---
+   
+
+    //出库操作 @rk---
+     deleteBridge(scope){
+             this.scope = scope;
+              this.dialogVisible = true
     },
-       deleteData(scope) {      
+    deleteData(scope) {      
       //console.log("index的值是：",scope.$index)
-      
+      this.dialogVisible = false
       this.tableData.splice(scope.$index, 1)
-      //this.inintData()//更新searchData
+      this.inintData()
       //console.log("出库的货物编码:",scope.row.goodsId)
-                            //用户信息删除      通过姓名判断
-       this.$http.post("/information/editUser", scope.row.userName).then(res => {
+                                                   //返回用户姓名，后端根据userName进行相关处理    将该商品从商品展示的数据库中删除并保存到出库记录数据库中
+       this.$http.post("/removeCommodity/outbound", scope.row.goodsId).then(res => {
           this.$message({
             message: "操作成功",
             type: "success"

@@ -12,22 +12,30 @@
       <!-- 搜索框区 -->
       <el-row :gutter="20">
         <el-col :span="10">
-          <el-input placeholder="请输入内容" v-model="queryInfo.query" class="input-with-select">
+          <!-- <el-input placeholder="请输入内容" v-model="search"
+                       @input="submitFun"
+                       ref='searchInput' class="input-with-select">
+            <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>-->
+
+          <el-input
+            placeholder="请输入商品名字或者库存编码"
+            v-model="search"
+            @input="submitFun"
+            ref="searchInput"
+          >
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
         </el-col>
-        <el-col :span="4">
-          <el-button type="primary" plain @click="addDialogVisible=true">添加信息</el-button>
-        </el-col>
       </el-row>
       <!-- 表格区 -->
-      <el-table :data="tableData" border :stripe="true">
+      <el-table :data="searchData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
-        <el-table-column prop="goods_name" label="商品名字"></el-table-column>
-        <el-table-column prop="goods_count" label="数量"></el-table-column>
-        <el-table-column prop="inbound_time" label="验收情况"></el-table-column>
-        <el-table-column prop="outbound_time" label="出库时间"></el-table-column>
-        <el-table-column prop="goods_num" label="库存编码"></el-table-column>
+        <el-table-column prop="goodsName" label="商品名字"></el-table-column>
+        <el-table-column prop="goodsCount" label="数量"></el-table-column>
+        <el-table-column prop="inboundTime" label="验收情况"></el-table-column>
+        <el-table-column prop="outboundTime" label="出库时间"></el-table-column>
+        <el-table-column prop="goodsId" label="库存编码"></el-table-column>
         <el-table-column prop="company" label="公司姓名"></el-table-column>
 
         <!-- <el-table-column prop="state" label="状态">
@@ -35,12 +43,11 @@
             <el-switch v-model="scope.row.state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </template>
         </el-table-column>-->
+      
         <el-table-column label="操作" width="130">
-          <template>
-            <!-- 修改 -->
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog()"></el-button>
+          <template slot-scope="scope">
             <!-- 删除 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteData()"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBridge(scope)"></el-button>
             <!-- 分配角色 -->
             <!-- <el-tooltip effect="dark" content="购买信息" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
@@ -62,60 +69,14 @@
         ></el-pagination>
       </div>
     </el-card>
-    <!-- 添加信息对话框 -->
-    <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="30%">
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
-        <el-form-item label="商品名字" prop="goods_name">
-          <el-input v-model="addForm.goods_name"></el-input>
-        </el-form-item>
-        <el-form-item label="数量" prop="goods_count">
-          <el-input v-model="addForm.goods_count"></el-input>
-        </el-form-item>
-        <el-form-item label="入库时间" prop="inbound_time">
-          <el-input v-model="addForm.check_situation"></el-input>
-        </el-form-item>
-        <el-form-item label="出库时间" prop="outbound_time">
-          <el-input v-model="addForm.inbound_time"></el-input>
-        </el-form-item>
-        <el-form-item label="库存编码" prop="goods_num">
-          <el-input v-model="addForm.goods_num"></el-input>
-        </el-form-item>
-        <el-form-item label="公司姓名" prop="company">
-          <el-input v-model="addForm.company"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser" :plain="true">确 定</el-button>
-      </span>
-    </el-dialog>
+  <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+          <span style="font-size: 20px; font-weight: 800;">确定要删除该条数据吗    <img src="../../assets/logo.png" style="position:absolute ; top:34.3px; width: 120px;height:120px;" alt class="logo" /></span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button type="primary" @click="deleteData(scope)">确 定</el-button>
+          </span>
+        </el-dialog>
     <!-- 修改信息对话框 -->
-    <el-dialog title="修改信息" :visible.sync="editDialogVisible" width="30%">
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="80px">
-        <el-form-item label="商品名字" prop="goods_name">
-          <el-input v-model="addForm.goods_name"></el-input>
-        </el-form-item>
-        <el-form-item label="数量" prop="goods_count">
-          <el-input v-model="addForm.goods_count"></el-input>
-        </el-form-item>
-        <el-form-item label="入库时间" prop="inbound_time">
-          <el-input v-model="addForm.check_situation"></el-input>
-        </el-form-item>
-        <el-form-item label="出库时间" prop="outbound_time">
-          <el-input v-model="addForm.inbound_time"></el-input>
-        </el-form-item>
-        <el-form-item label="库存编码" prop="goods_num">
-          <el-input v-model="addForm.goods_num"></el-input>
-        </el-form-item>
-        <el-form-item label="公司姓名" prop="company">
-          <el-input v-model="addForm.company"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="editDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="changeUser" :plain="true">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -123,91 +84,127 @@
 export default {
   data() {
     return {
+      scope:"",
+      dialogVisible: false,
+      search: "",
+      searchData: "",
       tableData: [
         {
-          goods_name: "矿泉水",
-          goods_count: 110,
-          inbound_time: "2020/2/21",
-          outbound_time: "2020/3/10",
-          goods_num: "bat",
+          goodsName: "矿泉水",
+          goodsCount: 110,
+          inboundTime: "2020/2/21",
+          outboundTime: "2020/3/10",
+          goodsId: "bat",
           company: "待审核"
         },
-         {
-          goods_name: "矿泉水",
-          goods_count: 110,
-          inbound_time: "2020/2/21",
-          outbound_time: "2020/3/10",
-          goods_num: "bat",
+        {
+          goodsName: "矿泉水",
+          goodsCount: 110,
+          inboundTime: "2020/2/21",
+          outboundTime: "2020/3/10",
+          goodsId: "bat",
           company: "待审核"
         }
       ],
       queryInfo: {
         query: "",
         pagenum: 1,
-        pagesize: 10
+        pagesize: 15
       },
       userlist: [],
       total: 0,
       addDialogVisible: false,
+      editDialogVisible: false,
       // 添加用户的表单数据
       addForm: {
-        goods_name: "",
-        goods_count: 0,
-        inbound_time: "",
-        outbound_time: "",
-        goods_num: "",
-        company: ""
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
+        company: "",
+        checkSituation: ""
+      },
+      editForm: {
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
+        company: "",
+        checkSituation: ""
       },
       changeForm: {
-        goods_name: "",
-        goods_count: 0,
-        inbound_time: "",
-        outbound_time: "",
-        goods_num: "",
-        company: ""
-      },
-      addFormRules: {
-        goods_name: [
-          { required: true, message: "请输入商品名字", trigger: "blur" }
-        ],
-        goods_count: [
-          { required: true, message: "请输入数量", trigger: "blur" }
-        ],
-        inbound_time: [
-          { required: true, message: "请输入出库时间", trigger: "blur" }
-        ],
-        outbound_time: [
-          { required: true, message: "请输入库存编码", trigger: "blur" }
-        ],
-        goods_num: [
-          { required: true, message: "请输入公司姓名", trigger: "blur" }
-        ],
-        company: [
-          { required: true, message: "请输入验收情况", trigger: "blur" }
-        ]
-      },
-      editDialogVisible: false
+        goodsName: "",
+        goodsCount: "",
+        inboundTime: "",
+        goodsId: "",
+        company: "",
+        checkSituation: ""
+      }
     };
   },
-  created() {
+
+  created: function() {
+    // 获取后端数据后
+    ///this.tableData=数据
+    this.fetch();
+    this.inintData();
     this.total = this.tableData.length;
   },
   methods: {
     async getUserList() {
       this.userlist = this.tableData;
     },
+    //查询功能
+    inintData() {
+      this.searchData = this.tableData;
+    },
+    submitFun() {
+      let search = this.search;
+      this.searchData = this.tableData.filter(function(tabledatas) {
+        //  console.log('过滤', tabledatas);
+        let searchField = {
+          goodsName: tabledatas.goodsName,
+          goodsId: tabledatas.goodsId
+        };
+        return Object.keys(searchField).some(function(key) {
+          // console.log('key值', key);
+          return (
+            String(tabledatas[key])
+              .toLowerCase()
+              .indexOf(search) > -1
+          );
+        });
+      });
+    },
     //  监听pagesize改变的事件
     handleSizeChange(newSize) {
-      console.log(newSize);
+      //console.log(newSize);
       this.queryInfo.pagesize = newSize;
       // 案例中是根据当前页面需要的数据数量来发起请求
-      this.getUserList();
+      //this.getUserList();
+      this.handleCurrentChange(this.queryInfo.pagenum);
     },
     // 监听页码值改变的事件
-    handleCurrentChange(newPage) {
-      console.log(newPage);
+    handleCurrentChange(currentPage) {
+      //console.log(newPage);
+      this.queryInfo.pagenum = currentPage;
+      this.currentChangePage(this.tableData, currentPage);
     },
+    currentChangePage(list, currentPage) {
+      let from = (currentPage - 1) * this.queryInfo.pagesize;
+      let to = currentPage * this.queryInfo.pagesize;
+      this.searchData = [];
+      for (; from < to; from++) {
+        if (list[from]) {
+          this.searchData.push(list[from]);
+        }
+      }
+    },
+
     // 监听添加用户表单的关闭事件并清除其中的数据
+    addDialogClosed() {
+      this.$refs.addFormRef.resetFields();
+    },
     addDialogClosed() {
       this.$refs.addFormRef.resetFields();
     },
@@ -216,24 +213,55 @@ export default {
     // 但此处加入tableData的数据和addForm绑定死了，分不开，在加入数据了之后
     // 清除表单里的数据还是会把已经加入界面里的删掉，就算不清除表单里的数据，加入表格里的也会每个数据都一模一样
     // 解决方案：Object.assign({}, this.addForm)需要深拷贝
-    addUser() {
-      this.$refs.addFormRef.validate(valid => {
-        if (!valid) {
-          this.$message("请填写完整信息");
-          this.addDialogClosed();
-        } else {
-          this.addDialogVisible = false;
-          this.tableData.push(Object.assign({}, this.addForm));
-          this.addDialogClosed();
-        }
+
+    //向后端申请数据 @rk---
+    // {
+    //       userName: "",
+    //       userSex: "",
+    //       userTel: "",
+    //       company: "",
+    //     },
+    fetch() {
+      this.$http.get("/commodity/getAll").then(res => {
+        this.tableData = res.data;
+        this.inintData();
       });
     },
-    changeUser() {},
-    // 展示编辑用户的对话框
-    showEditDialog() {
-      this.editDialogVisible = true;
+
+    //修改信息  @rk---
+ handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
+    //出库操作 @rk---
+    deleteBridge(scope){
+             this.scope = scope;
+              this.dialogVisible = true
     },
-    deleteDate() {}
+    deleteData(scope) {
+     this.dialogVisible = false
+      //console.log("index的值是：",scope.$index)
+
+      this.tableData.splice(scope.$index, 1);
+      this.inintData();
+      //console.log("出库的货物编码:",scope.row.goodsId)
+      //返回用户姓名，后端根据userName进行相关处理    将该商品从商品展示的数据库中删除并保存到出库记录数据库中
+      this.$http
+        .post("/removeCommodity/outbound", scope.row.goodsId)
+        .then(res => {
+          this.$message({
+            message: "操作成功",
+            type: "success"
+          });
+          this.fetch();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
   }
 };
 </script>

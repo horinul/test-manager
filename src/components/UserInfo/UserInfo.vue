@@ -6,15 +6,15 @@
         <el-avatar :src="imgUrl"></el-avatar>
       </el-col>
       <el-col :span="10">
-        <el-input placeholder="请输入姓名" v-model="user_name">
+        <el-input placeholder="请输入姓名" v-model="userName">
           <template slot="prepend">姓名</template>
         </el-input>
         <br />
-        <el-input placeholder="请输入性别" v-model="user_sex">
+        <el-input placeholder="请输入性别" v-model="userSex">
           <template slot="prepend">性别</template>
         </el-input>
         <br />
-        <el-input placeholder="请输入联系电话" v-model="user_tel">
+        <el-input placeholder="请输入联系电话" v-model="userTel">
           <template slot="prepend">联系电话</template>
         </el-input>
         <br />
@@ -30,9 +30,9 @@
 export default {
   data() {
     return {
-      user_name: "11",
-      user_sex: "male",
-      user_tel: "11233",
+      userName: "11",
+      userSex: "male",
+      userTel: "11233",
       company: "bat",
       imgUrl:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
     };
@@ -43,14 +43,14 @@ export default {
     }
   },
   watch: {
-    user_name(newName, oldName) {
+    userName(newName, oldName) {
         // 这个位置就是个人信息修改后监听的位置
         // console.log(newName)就会在控制台打印出
     },
-    user_sex(newSex,oldSex){
+    userSex(newSex,oldSex){
 
     },
-    user_tel(newPhone,oldPhone){
+    userTel(newPhone,oldPhone){
 
     },
     company(newCname,oldCname){

@@ -1,8 +1,18 @@
 <template>
+<div>
+
+ <!-- 头部面包屑 -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>客户相关</el-breadcrumb-item>
+      <el-breadcrumb-item>申请情况</el-breadcrumb-item>
+    </el-breadcrumb>
+  <el-card>
+   
   <el-table
     :data="tableData"
     border
-    style="width: 100%"
+    style="width: 100%; border-radius: 10px;box-shadow: 0 3px 6px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)"
     :row-class-name="tableRowClassName"
     :default-sort = "{prop: 'date', order: 'descending'}"
     >
@@ -30,20 +40,28 @@
     </el-table-column>
    
   </el-table>
+  </el-card>
+   
+</div>
 </template>
 <style>
+.el-table{
+  font-size: 18px !important;
+  font-weight: 800;
+}
   .el-table .warning-row {
-    background: rgb(219, 93, 71);
-    color:rgb(54, 52, 52)
+    background: rgb(214, 68, 68);
+    color:#505050
+    
   }
 
   .el-table .success-row {
-    background: #77da41;
-    color:rgb(54, 52, 52)
+    background: rgb(113, 184, 77);
+    color:#505050
   }
   .el-table .audit-row{
-       background: #eaec53;
-    color:rgb(54, 52, 52)
+       background:rgb(230, 172, 86);
+    color:#505050
   }
  
 </style>
