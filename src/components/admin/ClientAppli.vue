@@ -28,19 +28,17 @@
         <el-table-column type="index"></el-table-column>
         <el-table-column prop="goodsName" label="商品名字"></el-table-column>
         <el-table-column prop="goodsCount" label="数量"></el-table-column>
-        <el-table-column prop="outboundTime" label="出库时间"></el-table-column>
         <el-table-column prop="goodsId" label="库存编码"></el-table-column>
         <el-table-column prop="company" label="公司"></el-table-column>
-        <el-table-column prop="userName" label="客户姓名"></el-table-column>
+        <el-table-column prop="userName" label="姓名"></el-table-column>
         <el-table-column prop="userTel" label="电话"></el-table-column>
-        <el-table-column prop="depotNum" label="出库仓库"></el-table-column>
         <el-table-column prop="userPs" label="备注"></el-table-column>
         <!-- <el-table-column prop="state" label="状态">
           <template slot-scope="scope">
             <el-switch v-model="scope.row.state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
           </template>
         </el-table-column>-->
-        <el-table-column label="操作" width="130">
+        <el-table-column label="审核" width="130">
           <template slot-scope="scope">
             <!-- 删除 -->
 
@@ -89,34 +87,12 @@
 export default {
   data() {
     return {
+      postForm:"",
       search: "",
-      searchData: "",
-      tableData: [
-        {
-          goodsName: "矿泉水",
-          goodsCount: 110,
-          outboundTime: "2020/2/21",
-          goodsId: "33",
-          company: "bat",
-          userName: "zhangshan",
-          userTel: "5591",
-          depotNum: "bat",
-          userPs: "待审核"
-        },
-        {
-          goodsName: "泡面",
-          goodsCount: 120,
-          outboundTime: "2020/2/21",
-          goodsId: "32",
-          company: "bat",
-          userName: "zhangshan",
-          userTel: "55291",
-          depotNum: "bat",
-          userPs: "待审核"
-        }
-      ],
+      searchData: [],
+      tableData: [],
       checkedData: {
-        goodsId: "",
+        id: "",
         checkSituation: ""
       },
       queryInfo: {
@@ -130,7 +106,7 @@ export default {
       formIndex: "",
       addDialogVisible: false,
       addForm: {
-        goodsId: "",
+        id: "",
         checkSituation: ""
       }
     };
@@ -205,22 +181,25 @@ export default {
 
     //向后端申请数据 @rk---
     // {
-    //       userName: "",
+    //       userId: "",
     //       userSex: "",
     //       userTel: "",
     //       company: "",
     //     },
     fetch() {
+       this.openLoading()
       this.$http
-        .get("http://7qrmdg.natappfree.cc/kyaru/apply/getUnchecked")
+        .get(this.api+"/apply/getUnchecked")
         .then(res => {
+          console.log(res)
+           this.openLoading().close()
           this.tableData = res.data;
           this.inintData();
         });
     },
     checkDecision(scope) {
       this.addDialogVisible = true;
-      this.checkedData.goodsId = scope.row.goodsId;
+      this.checkedData.id = scope.row.id;
       this.formIndex = scope.$index;
     },
     addUser() {
@@ -231,24 +210,26 @@ export default {
         } else {
           this.addDialogVisible = false;
           this.addDialogClosed();
-          this.tableData.splice(this.formIndex, 1);
           this.inintData();
-          this.formIndex = "";
+       //  console.log(this.checkedData.checkSituation)
+         // console.log(this.checkedData.id)
+          let comValue = this.$qs.stringify(this.checkedData)
+            
+          // console.log(comValue)
           this.$http
-            .post("", this.checkedData)
+            .post(this.api +"apply/update", comValue)
             .then(res => {
+                console.log(res)
+              this.openLoading().close();
               this.$message({
-                message: "提交成功",
+                message: "操作成功",
                 type: "success"
-              });
-              this.editForm = {
-                goodsId: "",
-                checkSituation: ""
-              };
-              this.fetch();
+              });    
+              this.fetch()
+              
             })
             .catch(error => {
-              console.log(error);
+             // console.log(error);
             });
         }
       });
@@ -265,10 +246,10 @@ export default {
 
       this.tableData.splice(scope.$index, 1);
       this.inintData();
-      //console.log("出库的货物编码:",scope.row.goodsId)
-      //返回用户姓名，后端根据userName进行相关处理    将该商品从商品展示的数据库中删除并保存到出库记录数据库中
+      //console.log("出库的货物编码:",scope.row.id)
+      //返回用户姓名，后端根据userId进行相关处理    将该商品从商品展示的数据库中删除并保存到出库记录数据库中
       this.$http
-        .post("/removeCommodity/outbound", scope.row.goodsId)
+        .post("/removeCommodity/outbound", scope.row.id)
         .then(res => {
           this.$message({
             message: "操作成功",
@@ -277,7 +258,7 @@ export default {
           this.fetch();
         })
         .catch(error => {
-          console.log(error);
+       //   console.log(error);
         });
     }
   }

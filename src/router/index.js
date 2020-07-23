@@ -13,6 +13,7 @@ import AddInfo from '../components/admin/AddInfo.vue'
 import OutInfo from '../components/admin/OutInfo.vue'
 import ClientList from '../components/admin/ClientList.vue'
 import ClientAppli from '../components/admin/ClientAppli.vue'
+import AllGoodsInfo from '../components/admin/AllGoodsInfo.vue'
 
 import AppliOut from '../components/client/AppliOut.vue'
 import AppliState from '../components/client/AppliState.vue'
@@ -34,7 +35,7 @@ const routes = [{
     {
         path: '/home',
         component: Home,
-        redirect: '/welcome',
+        redirect: '/goodInfo',
         children: [{
                 path: '/welcome',
                 component: Welcome
@@ -57,6 +58,11 @@ const routes = [{
             {
                 path: '/clientAppli',
                 component: ClientAppli
+            },
+            {
+                path: '/allGoodsInfo',
+                component: AllGoodsInfo
+
             },
             {
                 path: '/appliOut',

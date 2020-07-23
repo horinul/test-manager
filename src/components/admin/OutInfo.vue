@@ -32,11 +32,12 @@
       <el-table :data="searchData" border :stripe="true">
         <el-table-column type="index"></el-table-column>
         <el-table-column prop="goodsName" label="商品名字"></el-table-column>
-        <el-table-column prop="goodsCount" label="数量"></el-table-column>
-        <el-table-column prop="inboundTime" label="验收情况"></el-table-column>
+        <el-table-column prop="goodsOutCount" label="出库数量"></el-table-column>
+  
         <el-table-column prop="outboundTime" label="出库时间"></el-table-column>
         <el-table-column prop="goodsId" label="库存编码"></el-table-column>
         <el-table-column prop="company" label="公司姓名"></el-table-column>
+              <el-table-column prop="userId" label="用户id"></el-table-column>
 
         <!-- <el-table-column prop="state" label="状态">
           <template slot-scope="scope">
@@ -44,16 +45,7 @@
           </template>
         </el-table-column>-->
       
-        <el-table-column label="操作" width="130">
-          <template slot-scope="scope">
-            <!-- 删除 -->
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteBridge(scope)"></el-button>
-            <!-- 分配角色 -->
-            <!-- <el-tooltip effect="dark" content="购买信息" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
-            </el-tooltip>-->
-          </template>
-        </el-table-column>
+      
       </el-table>
       <!-- 分页区 -->
       <div class="block">
@@ -88,24 +80,7 @@ export default {
       dialogVisible: false,
       search: "",
       searchData: "",
-      tableData: [
-        {
-          goodsName: "矿泉水",
-          goodsCount: 110,
-          inboundTime: "2020/2/21",
-          outboundTime: "2020/3/10",
-          goodsId: "bat",
-          company: "待审核"
-        },
-        {
-          goodsName: "矿泉水",
-          goodsCount: 110,
-          inboundTime: "2020/2/21",
-          outboundTime: "2020/3/10",
-          goodsId: "bat",
-          company: "待审核"
-        }
-      ],
+      tableData: [],
       queryInfo: {
         query: "",
         pagenum: 1,
@@ -118,24 +93,24 @@ export default {
       // 添加用户的表单数据
       addForm: {
         goodsName: "",
-        goodsCount: "",
-        inboundTime: "",
+        goodsOutCount: "",
+        userId: "",
         goodsId: "",
         company: "",
         checkSituation: ""
       },
       editForm: {
         goodsName: "",
-        goodsCount: "",
-        inboundTime: "",
+        goodsOutCount: "",
+        userId: "",
         goodsId: "",
         company: "",
         checkSituation: ""
       },
       changeForm: {
         goodsName: "",
-        goodsCount: "",
-        inboundTime: "",
+        goodsOutCount: "",
+        userId: "",
         goodsId: "",
         company: "",
         checkSituation: ""
@@ -222,8 +197,9 @@ export default {
     //       company: "",
     //     },
     fetch() {
-      this.$http.get("/commodity/getAll").then(res => {
-        this.tableData = res.data;
+      this.$http.get(this.api+"/removecommodity/getAll").then(res => {
+        console.log(res)
+        this.tableData = res.data.data;
         this.inintData();
       });
     },

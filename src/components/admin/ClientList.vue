@@ -32,6 +32,7 @@
         <el-table-column prop="userName" label="姓名"></el-table-column>
         <el-table-column prop="userSex" label="性别"></el-table-column>
         <el-table-column prop="userTel" label="联系电话"></el-table-column>
+        <el-table-column prop="userId" label="用户ID"></el-table-column>
         <el-table-column prop="company" label="公司"></el-table-column>
 
         <!-- <el-table-column prop="state" label="状态">
@@ -67,7 +68,7 @@
     </el-card>
    
     <!-- 修改信息对话框 -->
-    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+    <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
           <span style="font-size: 20px; font-weight: 800;">确定要删除该条数据吗    <img src="../../assets/logo.png" style="position:absolute ; top:34.3px; width: 120px;height:120px;" alt class="logo" /></span>
           <span slot="footer" class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
@@ -82,24 +83,12 @@
 export default {
   data() {
     return {
+      comValue:"",
       scope:"",
       dialogVisible: false,
        search:'',
       searchData:'',
-      tableData: [
-         {
-          userName: "22",
-          userSex: "female",
-          userTel: "11233",
-          company: "bat"
-        },
-        {
-          userName: "33",
-          userSex: "female",
-          userTel: "11233",
-          company: "bat"
-        }
-      ],
+      tableData: [],
       queryInfo: {
         query: "",
         pagenum: 1,
@@ -149,7 +138,7 @@ export default {
     // 获取后端数据后
     ///this.tableData=数据
       this.fetch();
-       this.inintData();
+     
       this.total = this.tableData.length;
         
   },
@@ -223,8 +212,11 @@ export default {
     //       company: "",
     //     },
     fetch() {
-      this.$http.get("/commodity/getAll").then(res => {
-        this.tableData= res.data;  
+      this.openLoading()
+      this.$http.get(this.api + "/user/getAll").then(res => {
+      //  console.log(res)
+       this.openLoading().close()
+        this.tableData= res.data.data;  
         this.inintData();
         
       });
@@ -241,11 +233,19 @@ export default {
     deleteData(scope) {      
       //console.log("index的值是：",scope.$index)
       this.dialogVisible = false
-      this.tableData.splice(scope.$index, 1)
-      this.inintData()
+    //  this.tableData.splice(scope.$index, 1)
+     // this.inintData()
+     let comValue = {
+       userId:''
+     }
+     comValue.userId = scope.row.userId
+   
+     let  postinfo = this.$qs.stringify(comValue)
+        console.log(postinfo)
+        // console.log(scope.row.userId)
       //console.log("出库的货物编码:",scope.row.goodsId)
                                                    //返回用户姓名，后端根据userName进行相关处理    将该商品从商品展示的数据库中删除并保存到出库记录数据库中
-       this.$http.post("/removeCommodity/outbound", scope.row.goodsId).then(res => {
+       this.$http.post(this.api+"user/delete?" +postinfo).then(res => {
           this.$message({
             message: "操作成功",
             type: "success"

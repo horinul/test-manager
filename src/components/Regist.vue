@@ -27,8 +27,8 @@
         <el-form-item label="公司" prop="company" style="width:350px">
           <el-input v-model="loginForm.company"></el-input>
         </el-form-item>
-        <el-form-item label="设置账号" prop="userAcount" style="width:350px">
-          <el-input v-model="loginForm.userAcount"></el-input>
+        <el-form-item label="设置账号" prop="userAccount" style="width:350px">
+          <el-input v-model="loginForm.userAccount"></el-input>
         </el-form-item>
         <el-form-item label="设置密码" prop="userPassword1" style="width:350px">
           <el-input v-model="loginForm.userPassword1" type="password"></el-input>
@@ -54,25 +54,31 @@ export default {
     return {
       fullscreenLoading: false,
       loginForm: {
+      
+          userSex: "",
+       
+         userAccount: "",
         userName: "",
-        userSex: "",
+          company: "",
+       isManager: "",
         isManager: "",
         userTel: "",
-        company: "",
-        userAcount: "",
-        company: "",
+        
+        userAccount: "",
         userPassword1: "",
         userPassword2: ""
       },
       postForm: {
         userName: "",
         userSex: "",
+         userAccount: "",
+          company: "",
+           userPassword: "",
         isManager: "",
         userTel: "",
-        company: "",
-        userAcount: "",
-        company: "",
-        userPassword: ""
+       
+       
+       
       },
       rules: {
         userName: [
@@ -81,7 +87,7 @@ export default {
         userTel: [
           { required: true, message: "请输入您的电话号码", trigger: "blur" }
         ],
-        userAcount: [
+        userAccount: [
           { required: true, message: "请输入您想要的用户名", trigger: "blur" }
         ],
         company: [
@@ -123,12 +129,26 @@ export default {
          this.postForm.isManager = this.loginForm.isManager;
          this.postForm.userTel = this.loginForm.userTel;  
          this.postForm.company = this.loginForm.company;
-         this.postForm.userAcount = this.loginForm.userAcount;
+         this.postForm.userAccount = this.loginForm.userAccount;
          this.postForm.userPassword = psw_pro;     
-            console.log(this.postForm);           
+        //let comValue = JSON.stringify(this.postForm)
+          let comValue = this.$qs.stringify(this.postForm)
+            
+           console.log(comValue)
+            console.log(this.api +"user/insertAll"+comValue)
           this.$http
-            .post("url", this.postForm)
+            .post(this.api +"user/insertAll", comValue)
             .then(res => {
+              if(res.data.code==500){
+                this.openLoading().close();
+              this.$message({
+                message: "账号已存在",
+                type: "danger"
+              });
+              }
+               
+               else{
+               console.log(res)
               this.openLoading().close();
               this.$message({
                 message: "注册成功",
@@ -140,12 +160,13 @@ export default {
                 isManager: "",
                 userTel: "",
                 company: "",
-                userAcount: "",
+                userAccount: "",
                 company: "",
                 userPassword1: "",
                 userPassword2: ""
               };
               this.$router.push("/login");
+            }
             })
             .catch(error => {
              // console.log(error);
