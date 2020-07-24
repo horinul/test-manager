@@ -119,7 +119,7 @@ export default {
     return {
        imageUrl: '',
        search:'',
-      searchData:[],
+      searchData:'',
       tableData: [],
       queryInfo: {
         query: "",
@@ -218,17 +218,18 @@ this.searchData= this.tableData
     inintData(){
       this.searchData=this.tableData
     },
-    submitFun(){
+      submitFun(){
        let search = this.search;
             this.searchData = this.tableData.filter(function (tabledatas) {
-                console.log('过滤', tabledatas);
-                let searchField = { userName: tabledatas.goodsName, userTel:tabledatas.goodsId };
+               // console.log('过滤', tabledatas);
+                let searchField = { goodsName: tabledatas.goodsName };
                 return Object.keys(searchField).some(function (key) {
-                    console.log('key值', key);
+                //    console.log('key值', key);
                     return String(tabledatas[key]).toLowerCase().indexOf(search) > -1;
                 });
             })
         
+
       
     },
     //  监听pagesize改变的事件
@@ -353,7 +354,7 @@ this.searchData= this.tableData
            company: "",
         checkSituation: ""
           };
-          this.fetch();
+          // this.fetch();
         }).catch(error=>{
                         console.log(error);
                     });
