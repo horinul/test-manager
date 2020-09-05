@@ -13,7 +13,10 @@ Vue.prototype.$http = axios
 Vue.prototype.$md5 = md5;
 Vue.prototype.$qs = qs;
 // natapp接口前缀
-Vue.prototype.api = 'http://pjmxkh.natappfree.cc/kyaru/'
+Vue.prototype.api = 'http://116.62.122.18:8080/kyaru/'
+
+import VueParticles from 'vue-particles'
+Vue.use(VueParticles)
 
 Vue.prototype.personInfo = {
     userName: 'sd',

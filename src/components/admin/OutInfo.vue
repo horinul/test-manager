@@ -139,15 +139,10 @@ export default {
         //  console.log('过滤', tabledatas);
         let searchField = {
           goodsName: tabledatas.goodsName,
-          goodsId: tabledatas.goodsId
         };
         return Object.keys(searchField).some(function(key) {
           // console.log('key值', key);
-          return (
-            String(tabledatas[key])
-              .toLowerCase()
-              .indexOf(search) > -1
-          );
+          return String(tabledatas[key]).toLowerCase().indexOf(search) > -1;
         });
       });
     },
@@ -199,7 +194,14 @@ export default {
     fetch() {
       this.$http.get(this.api+"/removecommodity/getAll").then(res => {
         console.log(res)
-        this.tableData = res.data.data;
+           var jsonObj = JSON.parse(JSON.stringify(res.data.data));
+      for (var i = 0; i < jsonObj.length; i++) {
+         var d=new Date(jsonObj[i].outboundTime);
+         var time=d.toLocaleDateString()
+          jsonObj[i].outboundTime = time
+
+      }
+    this.tableData = jsonObj;
         this.inintData();
       });
     },

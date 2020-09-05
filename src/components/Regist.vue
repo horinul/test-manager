@@ -1,5 +1,23 @@
 <template>
   <div class="login_container">
+    <vue-particles
+      color="#dedede"
+      :particleOpacity="0.7"
+      :particlesNumber="80"
+      shapeType="circle"
+      :particleSize="4"
+      linesColor="#dedede"
+      :linesWidth="1"
+      :lineLinked="true"
+      :lineOpacity="0.4"
+      :linesDistance="150"
+      :moveSpeed="3"
+      :hoverEffect="true"
+      hoverMode="grab"
+      :clickEffect="true"
+      clickMode="push"
+    >
+    </vue-particles>
     <div class="login_box">
       <h1 class="regiser_title">欢迎注册</h1>
 
@@ -22,7 +40,7 @@
           <el-radio v-model="loginForm.isManager" label="1">管理员</el-radio>
         </el-form-item>
         <el-form-item label="电话" prop="userTel" style="width:350px">
-          <el-input v-model="loginForm.userTel"></el-input>
+          <el-input v-model="loginForm.userTel" maxlength="11"></el-input>
         </el-form-item>
         <el-form-item label="公司" prop="company" style="width:350px">
           <el-input v-model="loginForm.company"></el-input>
@@ -31,17 +49,27 @@
           <el-input v-model="loginForm.userAccount"></el-input>
         </el-form-item>
         <el-form-item label="设置密码" prop="userPassword1" style="width:350px">
-          <el-input v-model="loginForm.userPassword1" type="password"></el-input>
+          <el-input
+            v-model="loginForm.userPassword1"
+            type="password"
+          ></el-input>
         </el-form-item>
         <el-form-item label="再次确认" prop="userPassword2" style="width:350px">
-          <el-input v-model="loginForm.userPassword2" type="password"></el-input>
+          <el-input
+            v-model="loginForm.userPassword2"
+            type="password"
+          ></el-input>
         </el-form-item>
 
         <!-- 按钮区 -->
 
-        <el-button type="primary" class="sumbtn" plain @click="login">确定</el-button>
+        <el-button type="primary" class="sumbtn" plain @click="login"
+          >确定</el-button
+        >
         <el-form-item class="btns">
-          <el-button type="text" plain @click="resetLoginForm">返回登陆界面</el-button>
+          <el-button type="text" plain @click="resetLoginForm"
+            >返回登陆界面</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -54,55 +82,53 @@ export default {
     return {
       fullscreenLoading: false,
       loginForm: {
-      
-          userSex: "",
-       
-         userAccount: "",
+        userSex: "",
+        userAccount: "",
         userName: "",
-          company: "",
-       isManager: "",
+        company: "",
+        isManager: "",
         isManager: "",
         userTel: "",
-        
         userAccount: "",
         userPassword1: "",
-        userPassword2: ""
+        userPassword2: "",
       },
       postForm: {
         userName: "",
         userSex: "",
-         userAccount: "",
-          company: "",
-           userPassword: "",
+        userAccount: "",
+        company: "",
+        userPassword: "",
         isManager: "",
         userTel: "",
-       
-       
-       
       },
       rules: {
         userName: [
-          { required: true, message: "请输入您的姓名", trigger: "blur" }
+          { required: true, message: "请输入您的姓名", trigger: "blur" },
         ],
         userTel: [
-          { required: true, message: "请输入您的电话号码", trigger: "blur" }
+          { required: true, message: "请输入您的电话号码", trigger: "blur" },
         ],
         userAccount: [
-          { required: true, message: "请输入您想要的用户名", trigger: "blur" }
+          { required: true, message: "请输入您想要的用户名", trigger: "blur" },
         ],
         company: [
-          { required: true, message: "请输入您的所在公司名", trigger: "blur" }
+          { required: true, message: "请输入您的所在公司名", trigger: "blur" },
         ],
         userPassword1: [
           { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 6,  message: '密码过短', trigger: 'blur' }
+          { min: 6, message: "密码过短", trigger: "blur" },
         ],
         userPassword2: [
-          { required: true, message: "请再次输入密码进行确实", trigger: "blur" }
+          {
+            required: true,
+            message: "请再次输入密码进行确实",
+            trigger: "blur",
+          },
         ],
         userSex: [{ required: true, message: "请选择性别", trigger: "blur" }],
-        isManager: [{ required: true, message: "请选择身份", trigger: "blur" }]
-      }
+        isManager: [{ required: true, message: "请选择身份", trigger: "blur" }],
+      },
     };
   },
   methods: {
@@ -110,78 +136,75 @@ export default {
       this.$router.push("/login");
     },
     login() {
-       // console.log(this.loginForm)
-      this.$refs.loginFormRef.validate(valid => {
+      // console.log(this.loginForm)
+      this.$refs.loginFormRef.validate((valid) => {
         if (!valid) {
           this.$message("请填写完整信息");
           this.addDialogClosed();
-        } 
-        else if (this.loginForm.userPassword1!==this.loginForm.userPassword2){
-     this.$message("密码不匹配,请重新输入密码");
-        }
-        else {
+        } else if (
+          this.loginForm.userPassword1 !== this.loginForm.userPassword2
+        ) {
+          this.$message("密码不匹配,请重新输入密码");
+        } else {
           this.openLoading();
-         // console.log(this.loginForm);
-           let psw = this.$md5(this.loginForm.userPassword1)
-           let psw_pro = this.$md5(psw)
-         this.postForm.userName = this.loginForm.userName;
-         this.postForm.userSex = this.loginForm.userSex;
-         this.postForm.isManager = this.loginForm.isManager;
-         this.postForm.userTel = this.loginForm.userTel;  
-         this.postForm.company = this.loginForm.company;
-         this.postForm.userAccount = this.loginForm.userAccount;
-         this.postForm.userPassword = psw_pro;     
-        //let comValue = JSON.stringify(this.postForm)
-          let comValue = this.$qs.stringify(this.postForm)
-            
-           console.log(comValue)
-            console.log(this.api +"user/insertAll"+comValue)
+          // console.log(this.loginForm);
+          let psw = this.$md5(this.loginForm.userPassword1);
+          let psw_pro = this.$md5(psw);
+          this.postForm.userName = this.loginForm.userName;
+          this.postForm.userSex = this.loginForm.userSex;
+          this.postForm.isManager = this.loginForm.isManager;
+          this.postForm.userTel = this.loginForm.userTel;
+          this.postForm.company = this.loginForm.company;
+          this.postForm.userAccount = this.loginForm.userAccount;
+          this.postForm.userPassword = psw_pro;
+          //let comValue = JSON.stringify(this.postForm)
+          let comValue = this.$qs.stringify(this.postForm);
+          console.log(comValue);
+          console.log(this.api + "user/insertAll" + comValue);
           this.$http
-            .post(this.api +"user/insertAll", comValue)
-            .then(res => {
-              if(res.data.code==500){
+            .post(this.api + "user/insertAll", comValue)
+            .then((res) => {
+              if (res.data.code == 500) {
                 this.openLoading().close();
-              this.$message({
-                message: "账号已存在",
-                type: "danger"
-              });
+                this.$message({
+                  message: "账号已存在",
+                  type: "danger",
+                });
+              } else {
+                console.log(res);
+                this.openLoading().close();
+                this.$message({
+                  message: "注册成功",
+                  type: "success",
+                });
+                this.loginForm = {
+                  userName: "",
+                  userSex: "",
+                  isManager: "",
+                  userTel: "",
+                  company: "",
+                  userAccount: "",
+                  company: "",
+                  userPassword1: "",
+                  userPassword2: "",
+                };
+                this.$router.push("/login");
               }
-               
-               else{
-               console.log(res)
-              this.openLoading().close();
-              this.$message({
-                message: "注册成功",
-                type: "success"
-              });
-              this.loginForm = {
-                userName: "",
-                userSex: "",
-                isManager: "",
-                userTel: "",
-                company: "",
-                userAccount: "",
-                company: "",
-                userPassword1: "",
-                userPassword2: ""
-              };
-              this.$router.push("/login");
-            }
             })
-            .catch(error => {
-             // console.log(error);
+            .catch((error) => {
+              // console.log(error);
             });
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style lang='less' scoped>
+<style lang="less" scoped>
 .login_container {
   background-color: #2b4b6b;
-  height: 100%;
+  height: 770px;
 }
 .login_box {
   width: 450px;
@@ -214,10 +237,11 @@ export default {
 .btns {
   display: flex;
   justify-content: flex-end;
+  padding: 10px 0;
 }
 .login_form {
   position: absolute;
-  bottom: 0;
+  bottom: -15px;
   width: 100%;
   padding: 0 20px;
   box-sizing: border-box;
@@ -225,6 +249,7 @@ export default {
 .regiser_title {
   text-align: center;
   opacity: 0.6;
+  line-height: 30px;
 }
 .el-form {
   margin-bottom: 15px;
@@ -233,5 +258,6 @@ export default {
   position: absolute;
   width: 230px;
   margin: 0 88px auto;
+  bottom: 32px;
 }
 </style>

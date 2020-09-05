@@ -161,9 +161,10 @@ export default {
   },
 
   created() {
-    this.changeInfo()
-    this.fetch();
    
+    this.fetch();
+    this.changeInfo()
+    this.changeM()
     this.activePath = window.sessionStorage.getItem("activePath");
   },
   methods: {
@@ -175,11 +176,14 @@ export default {
     else{
       this.userDis.sex = "女"
     }
-        if(this.userData.isManager == 0){
+      
+    },
+    changeM(){
+  if(this.userData.isManager == 0){
       this.userDis.cor = "用户"
     }
-    else{
-      this.userDis.isManager = "管理员"
+    else {
+      this.userDis.cor = "管理员"
     }
     },
     editInfo(){

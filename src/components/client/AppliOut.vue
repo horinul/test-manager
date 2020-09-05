@@ -96,17 +96,6 @@
     methods: {
       
       submitForm(formName) {
-      //   let ymd = this.ruleForm.outboundTime1 
-      //    var y = ymd.getFullYear()
-      // var m = ymd.getMonth() + 1
-      // var d = ymd.getDate()
-             
-      //        let hms = this.ruleForm.outboundTime2   
-      //        var hh = hms.getHours()
-      //   var mm = hms.getMinutes()
-      //   var ss = hms.getSeconds()
-      //   let filter_date = y+'-'+m+'-'+d+' '+hh+':'+mm+':'+ss
-//console.log(filter_date)
   this.postForm.goodsId = this.ruleForm.goodsId
     // this.postForm.outboundTime = filter_date
     this.postForm.goodsName = this.ruleForm.goodsName

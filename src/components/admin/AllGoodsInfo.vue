@@ -201,12 +201,20 @@ export default {
     //     },
     fetch() {
       this.openLoading()
-      this.$http.get(this.api + "newcommodity/getAll").then(res => {
-        this.openLoading().close()
-        console.log(res.data.data)
-        this.tableData= res.data.data;  
-        this.inintData();
-        
+      this.$http.get(this.api + "newcommodity/getAll").then(res => {            
+           // this.tableData= res.data.data;  
+            console.log(this.tableData)
+              var jsonObj = JSON.parse(JSON.stringify(res.data.data));
+      for (var i = 0; i < jsonObj.length; i++) {
+         var d=new Date(jsonObj[i].inboundTime);
+         var time=d.toLocaleDateString()
+          jsonObj[i].inboundTime = time
+      }
+    this.tableData = jsonObj;                              
+     console.log(res.data.data)
+      this.openLoading().close()
+      this.inintData();
+   
       });
     },
 
